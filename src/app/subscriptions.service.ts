@@ -1,17 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class SubscriptionsService {
   private readonly http = inject(HttpClient);
 
-  subscribeToNotifications(pushNotificationSub: PushSubscription): Observable<void> {
+  subscribeToNotifications(pushNotificationSub: Subscription): Observable<void> {
       return this.http.post<void>(`${environment.apiUrl}/subscriptions`, pushNotificationSub);
   }
 
   getVapidPublicKey(): Observable<string> {
-      return this.http.get<string>(`${environment.apiUrl}/vapidKey`);
+      return this.http.get<{publicKey: string}>(`${environment.apiUrl}/vapidKey`).pipe(map(vapidKey => vapidKey.publicKey));
   }
 }
